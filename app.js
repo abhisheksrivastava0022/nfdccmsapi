@@ -47,6 +47,7 @@ const settingRoutes = require('./routes/setting.js');
 const authenticate = require('./routes/setting.js');
 const imageRoute = require("./routes/imageRoute.js");
 const postRoute = require('./routes/post.js');
+const menuRoute = require('./routes/menu.js');
 const path = require('path'); // Import the path module
 
 //router.use("/dashboard", dashboardRoutes);
@@ -60,6 +61,7 @@ router.use("/user", userAfterLogin); // authenticate checked automatic;
 router.use("/setting", settingRoutes); // authenticate for login will not check;
 router.use("/file", imageRoute);
 router.use("/post", postRoute);
+router.use("/menu", menuRoute);
 
 app.use("/api", router);
 

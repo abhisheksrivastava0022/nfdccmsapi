@@ -40,6 +40,7 @@ router
 
 router
     .route("/:id(\\d+)")
+    .delete(controller.delete)
     .get(controller.details)
     .patch(controller.update)
 

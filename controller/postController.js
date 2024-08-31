@@ -46,6 +46,11 @@ exports.create = CatchAsync(async (req, res, next) => {
         created_by: req.userlogin.id,
         updated_by: req.userlogin.id,
     });
+    if (!postData.parent_id) {
+        await post.update({
+            parent_id: post.id,
+        });
+    }
     const output = {
         status: true,
         data: post.id,
@@ -138,6 +143,12 @@ exports.detail = CatchAsync(async (req, res, next) => {
             post_id: id
         }
     }))));
+    post.check_other_lang = JSON.parse(JSON.stringify((await db.post.findAll({
+        attributes: ["language", "id"],
+        where: {
+            parent_id: post.parent_id
+        }
+    }))));
     const output = {
         status: true,
         data: post,
@@ -145,6 +156,7 @@ exports.detail = CatchAsync(async (req, res, next) => {
     }
     res.status(200).json(output);
 })
+
 exports.delete = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
     const post = await db.post.findByPk(id);

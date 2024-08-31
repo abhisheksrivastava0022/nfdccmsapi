@@ -25,8 +25,8 @@ exports.index = CatchAsync(async (req, res, next) => {
 exports.create = CatchAsync(async (req, res, next) => {
     const postData = req.body;
     await db.menu.create({
-        name: postData.name,
-        payload_data: postData.payload_data,
+        name: postData.menu_create,
+        // payload_data: postData.payload_data,
         website_setting_id: (postData.website_setting_id),
     });
     const output = {
@@ -42,7 +42,7 @@ exports.update = CatchAsync(async (req, res, next) => {
     const menu = await db.menu.findByPk(id);
     await menu.update({
         name: postData.name,
-        payload_data: postData.payload_data,
+        payload_data: postData.payload,
     })
 
     const data = null;

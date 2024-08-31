@@ -287,8 +287,6 @@ exports.delete = CatchAsync(async (req, res, next) => {
 	const output = {};
 	const { id } = req.params; //req.params
 	output['status'] = true;
-
-
 	var data = await Users.findByPk(id);
 
 	if (!data) return next(new AppError(`No data Found`, 404));

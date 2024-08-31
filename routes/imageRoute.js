@@ -16,4 +16,9 @@ router
     .post(controller.create)
     .get(controller.list);
 
+router
+    .route("/:id(\\d+)")
+    // .all(checkUserRole(route.ERP_IMAGE))
+    .delete(controller.delete)
+
 module.exports = router;

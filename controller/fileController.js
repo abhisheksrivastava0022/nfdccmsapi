@@ -68,3 +68,17 @@ exports.create = CatchAsync(async (req, res, next) => {
 
 
 
+
+exports.delete = CatchAsync(async (req, res, next) => {
+    const { id } = req.params; //req.params {postdata}
+    const post = await db.gallery.findByPk(id);
+    await post.destroy();
+
+    const data = null;
+    const output = {
+        status: true,
+        data,
+        message: 'Deleted successfully.'
+    }
+    res.status(200).json(output);
+})
