@@ -3,7 +3,7 @@ const Joi = require('joi');
 exports.postCheck = (schema) => {
     return (req, res, next) => {
         let postdata = { ...req.body };
-
+        console.log({ postdata: req.body })
         const { error, value } = (schema.validate(postdata));
 
         if (error == undefined) {

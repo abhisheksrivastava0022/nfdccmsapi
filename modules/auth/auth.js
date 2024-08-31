@@ -9,6 +9,7 @@ const Users = db.users;
 const auth_assignment_model = db.auth_assignment;
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const bodyParser = require('body-parser'); // Optional if using `express.urlencoded()`
 
 const { permission, user_roles } = require("../../constants/user");
 const role_type = {};
@@ -139,38 +140,14 @@ exports.list = CatchAsync(async (req, res, next) => {
 			"id",
 			"username",
 			"email",
-			"name",
+			"first_name",
+			"last_name",
 			"type",
 			"status",
 
-		],
-		include: [{
-			model: auth_assignment_model,
-			attributes: [["item_name", "role"]],
-			as: "roles",
-			where: {
-				item_name: {
-					[Op.ne]: "vendor"
-				}
-			},
-			required: false
-		}],
-		where: {
-			type: 1
-		}
-
+		]
 	})));
 
-	data.map((user, key) => {
-		if (user?.roles) {
-			const userroles = [];
-			user.roles.map((roles) => {
-				userroles.push(roles.role);
-			})
-			data[key].roles = [...new Set(userroles)]
-		}
-	})
-	//console.log(data);
 	const output = {
 		status: true,
 		data: data
@@ -213,7 +190,6 @@ exports.updateUser = CatchAsync(async (req, res, next) => {
 		const imagescontent = await APIFeatures.copyImageToPrivate(postData.profile, db.image_temp, dir);
 		userData.profile = imagescontent.url;
 	} else {
-
 		await User.setUserRoleAssignment(db, user_roles);
 	}
 	await User.update(userData);
@@ -258,37 +234,51 @@ exports.activate = CatchAsync(async (req, res, next) => {
 exports.update = CatchAsync(async (req, res, next) => {
 
 	const postData = req.body;
-	const id = req.userlogin.id; //req.params
-	const user_roles = (postData?.user_roles) ? postData.user_roles : [];
+
+	const { id } = req.params;
+
 	const User = await Users.findByPk(id);
 	if (!User) return next(new AppError(`No data Found`, 404));
-	const userData = (Users.setUserData(postData));
-	//userData.type = 1;
-
-	const dir = 'document/profile/';
-	if (postData?.profile) {
-		const imagescontent = await APIFeatures.copyImageToPrivate(postData.profile, db.image_temp, dir);
-		userData.profile = imagescontent.url;
-	} else {
-		await User.setUserRoleAssignment(db, user_roles);
+	let userData = {
+		first_name: postData.first_name,
+		last_name: postData.last_name,
+		username: postData.username,
+		email: postData.email,
 	}
 	await User.update(userData);
-
-
 	const output = {
 		status: true,
-		data: await buildQuery({ id: id }, {}),
+		data: {},
 		message: "User data updated successfully"
 	}
 	res.status(200).json(output);
 })
-exports.details = CatchAsync(async (req, res) => {
-	const output = {};
-	output['status'] = true;
-	const { id } = req.params;
-	let details = await buildQuery({ id: id }, {});
+exports.detailUserLogin = CatchAsync(async (req, res) => {
 
-	output.data = details;
+	const data = JSON.parse(JSON.stringify(req.userlogin));
+
+	const output = {
+		status: true,
+		message: "",
+		data: req.userlogin
+	}
+	res.status(200).json(output);
+})
+exports.details = CatchAsync(async (req, res) => {
+	const { id } = req.params;
+	const User = await Users.findOne({
+		attributes: ['first_name', 'last_name', 'email', 'username'],
+
+		where: {
+			id
+		}
+	});
+	if (!User) return next(new AppError(`No data Found`, 404));
+	const output = {
+		status: true,
+		message: "",
+		data: User
+	}
 	res.status(200).json(output);
 })
 
@@ -342,6 +332,7 @@ exports.passwordChange = CatchAsync(async (req, res, next) => {
 
 exports.login = CatchAsync(async (req, res, next) => {
 	let postdata = req.body;
+
 	let user = new Users;
 	user.user = postdata.username;
 	user.pass = postdata.password;
@@ -354,7 +345,8 @@ exports.login = CatchAsync(async (req, res, next) => {
 
 	const token = jwt.sign({ username: userlogin.username }, "keydata");
 
-	await res.cookie('access_token', token, { maxAge: 10000 * 24 * 3000 * 30, httpOnly: true, secure: (process.env['NODE_ENV'] == "prod") });
+	await res.cookie('access_token', token, { sameSite: 'None', maxAge: 10000 * 24 * 3000 * 30, httpOnly: true, secure: true });
+	//await res.send('Cookie set');
 	const output = {
 		status: true,
 		message: "Sucessfully Login."
@@ -444,34 +436,23 @@ exports.changePassword = CatchAsync(async (req, res, next) => {
 })
 
 exports.create = CatchAsync(async (req, res, next) => {
-	var postData = req.body;
+	const postData = req.body;
 	password = await auth.generatePassword(postData.password);
 	let userData = {
-		name: postData.name,
+		first_name: postData.first_name,
+		last_name: postData.last_name,
 		username: postData.username,
 		email: postData.email,
 		password: password,
 		type: 1,
 		status: 1,
 	}
-	// Upload profile
-	const dir = 'document/profile/';
-	if (postData?.profile) {
-		const imagescontent = await APIFeatures.copyImageToPrivate(postData.profile, db.image_temp, dir);
-		userData.profile = imagescontent.url;
-	}
 	const user = await Users.create(userData);
-	const user_roles = (postData?.user_roles) ? postData.user_roles : [];
-	await user.setUserRoleAssignment(db, user_roles);
-
-
-	const user_details = await Users.findByPk(user.id);
-	eventEmitter.emit(eventContant.UPDATE_HUBSPOT_DEAL_OWNER, user_details, Date.now());
-
+	//const user_details = await Users.findByPk(user.id);
 	const output = {
 		status: true,
 		message: "User Registered Successfully",
-		data: user_details
+		data: user.id
 	}
 	res.status(201).json(output);
 })

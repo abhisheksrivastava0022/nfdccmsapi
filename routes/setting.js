@@ -10,6 +10,13 @@ router
     .route("/")
     // .all(checkUserRole(route.ERP_ITEM))
     .get(controller.auth, controller.index)
-// .delete(controller.delete)
+    .post(controller.create)
+
+router
+    .route("/:id(\\d+)")
+    .get(controller.auth, controller.websiteSetting)
+    .delete(controller.delete)
+    .patch(controller.update)
+
 
 module.exports = router;

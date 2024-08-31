@@ -10,7 +10,7 @@ exports.index = CatchAsync(async (req, res, next) => {
     const settings = await db.setting.findAll();
     const data = {};
     for (const setting of settings) {
-        console.log({ setting });
+        //  console.log({ setting });
         if (data[setting.meta]) {
             data[setting.meta].push(setting.meta_value);
         } else {

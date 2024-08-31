@@ -70,6 +70,8 @@ exports.currenTimeStamp = function (date) {
   return formattedDate;
 }
 
+exports.privateKey = 'keydata';
+
 exports.roles = [
   {
     name: "administrator",
@@ -87,3 +89,4 @@ exports.roles = [
   },
 
 ]
+

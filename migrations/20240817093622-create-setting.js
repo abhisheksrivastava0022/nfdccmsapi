@@ -15,6 +15,9 @@ module.exports = {
       meta_value: {
         type: Sequelize.STRING
       },
+      setting_id: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

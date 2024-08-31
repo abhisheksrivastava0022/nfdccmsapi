@@ -211,13 +211,35 @@ module.exports = (sequelize, DataTypes) => {
       first_name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notNull: {
+            msg: 'First name is required and cannot be null.', // Custom error message for null
+          },
+          notEmpty: {
+            msg: 'First name cannot be an empty string.', // Custom error message for empty string
+          },
+        },
       },
       last_name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notNull: {
+            msg: 'Last name is required and cannot be null.', // Custom error message for null
+          },
+          notEmpty: {
+            msg: 'Last name cannot be an empty string.', // Custom error message for empty string
+          },
+        },
       },
       username: {
         validate: {
+          notNull: {
+            msg: 'Username is required and cannot be null.', // Custom error message for null
+          },
+          notEmpty: {
+            msg: 'Username cannot be an empty string.', // Custom error message for empty string
+          },
           isUnique: async function (value, next) {
             var self = this;
             let datarel = await Users.findOne({ where: { username: value } });
@@ -231,6 +253,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         type: DataTypes.STRING,
         allowNull: false,
+
       },
       access_token: {
         type: DataTypes.STRING,
@@ -242,6 +265,12 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
         validate: {
           isEmail: true,
+          notNull: {
+            msg: 'Email is required and cannot be null.', // Custom error message for null
+          },
+          notEmpty: {
+            msg: 'Email cannot be an empty string.', // Custom error message for empty string
+          },
           isUnique: async function (value, next) {
             var self = this;
             let datarel = await Users.findOne({ where: { email: value } });
@@ -261,6 +290,14 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notNull: {
+            msg: 'Password is required and cannot be null.', // Custom error message for null
+          },
+          notEmpty: {
+            msg: 'Password cannot be an empty string.', // Custom error message for empty string
+          },
+        },
       },
 
       status: {

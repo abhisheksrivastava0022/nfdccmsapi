@@ -13,7 +13,7 @@ const CatchAsync = require("../utils/catchAsync");
 
 
 exports.signToken = (data) => {
-    return jwt.sign(data, appconfig.get.privateKey,
+    return jwt.sign(data, appconfig.privateKey,
         {
             expiresIn: appconfig.get.clientTokenDuration
         }
@@ -37,7 +37,7 @@ exports.sendToken = (data, statusCode, res, token_name) => {
 
 exports.verifyAccessToken = async (token) => {
     try {
-        return jwt.verify(token, appconfig.get.privateKey);
+        return jwt.verify(token, appconfig.privateKey);
 
     } catch (ex) {
         return 0

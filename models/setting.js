@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Setting.init({
     meta: DataTypes.STRING,
-    meta_value: DataTypes.STRING
+    meta_value: DataTypes.STRING,
+    setting_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'setting',
