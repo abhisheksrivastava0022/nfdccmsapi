@@ -12,6 +12,7 @@ const Op = Sequelize.Op;
 const bodyParser = require('body-parser'); // Optional if using `express.urlencoded()`
 
 const { permission, user_roles } = require("../../constants/user");
+const user_meta = require("../../models/user_meta");
 const role_type = {};
 permission.map((roles) => {
 	role_type[roles.name] = roles.type;
@@ -244,6 +245,7 @@ exports.update = CatchAsync(async (req, res, next) => {
 		last_name: postData.last_name,
 		username: postData.username,
 		email: postData.email,
+		status: postData.status,
 	}
 	await User.update(userData);
 	const output = {
@@ -256,6 +258,47 @@ exports.update = CatchAsync(async (req, res, next) => {
 exports.detailUserLogin = CatchAsync(async (req, res) => {
 
 	const data = JSON.parse(JSON.stringify(req.userlogin));
+	const metaData = JSON.parse(JSON.stringify(await db.user_meta.findAll({
+		where: {
+			user_id: data.id,
+
+		}
+	})));
+	const metaDatas = {};
+	for (const meta of metaData) {
+		metaDatas[meta.meta] = meta.meta_value
+	}
+	data.user_meta = metaDatas;
+	const output = {
+		status: true,
+		message: "",
+		data
+	}
+	res.status(200).json(output);
+})
+
+exports.updateMeta = CatchAsync(async (req, res) => {
+	const postData = req.body;
+	const data = req.userlogin;
+	for (const datakey in postData) {
+		const user_meta = await db.user_meta.findOne({
+			where: {
+				user_id: data.id,
+				meta: datakey,
+				//meta_value: postData[datakey]
+			}
+		});
+		if (user_meta) {
+			await user_meta.update({ meta_value: postData[datakey] });
+		} else {
+			await db.user_meta.create({
+				user_id: data.id,
+				meta: datakey,
+				meta_value: postData[datakey]
+			});
+		}
+	}
+
 
 	const output = {
 		status: true,
@@ -264,10 +307,12 @@ exports.detailUserLogin = CatchAsync(async (req, res) => {
 	}
 	res.status(200).json(output);
 })
+
+
 exports.details = CatchAsync(async (req, res) => {
 	const { id } = req.params;
 	const User = await Users.findOne({
-		attributes: ['first_name', 'last_name', 'email', 'username'],
+		attributes: ['first_name', 'last_name', 'email', 'username', 'status'],
 
 		where: {
 			id

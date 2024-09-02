@@ -39,6 +39,10 @@ router
     .get(controller.list)
 
 router
+    .route("/meta")
+    .patch(controller.updateMeta)
+
+router
     .route("/:id(\\d+)")
     .delete(controller.delete)
     .get(controller.details)

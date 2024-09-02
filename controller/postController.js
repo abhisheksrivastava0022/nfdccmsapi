@@ -7,18 +7,43 @@ const Sequelize = require("sequelize");
 exports.auth = CatchAsync(async (req, res, next) => {
     next();
 })
-
 exports.index = CatchAsync(async (req, res, next) => {
     const postData = req.body;
+    const { page = 0, rowsPerPage = 100, post_setting_id, language } = postData;
+    const search = postData?.search ?? {}
+    // Calculate the offset for pagination
+    const offset = page * rowsPerPage;
+
+    // Build the query parameters
     const buildingParam = {
         where: {
-            post_setting_id: postData.post_setting_id,
-            language: postData.language,
-        }
+            post_setting_id: post_setting_id,
+            language: language,
+            ...(search && search.title && {
+                title: {
+                    [db.Sequelize.Op.like]: `%${search.title}%`,
+                },
+            }),
+            ...(search && search.post_id && {
+                id: search.post_id,
+            }),
+        },
+        limit: rowsPerPage,
+        offset: offset,
     };
-    const post = await db.post.findAll(buildingParam);
-    const count = await db.post.count(buildingParam);
 
+    // Fetch the posts based on the query parameters
+    const post = await db.post.findAll(buildingParam);
+
+    // Count the total number of posts for the given conditions
+    const count = await db.post.count({
+        where: {
+            post_setting_id: post_setting_id,
+            language: language,
+        }
+    });
+
+    // Prepare the output
     const output = {
         status: true,
         data: {
@@ -26,9 +51,12 @@ exports.index = CatchAsync(async (req, res, next) => {
             total_count: count,
         },
         message: ''
-    }
+    };
+
+    // Send the response
     res.status(200).json(output);
-})
+});
+
 
 exports.create = CatchAsync(async (req, res, next) => {
     const postData = req.body;
@@ -68,6 +96,7 @@ exports.update = CatchAsync(async (req, res, next) => {
         title: postData.title,
         content: postData.content,
         short_description: postData.short_description,
+        status: postData.status,
         updated_by: req.userlogin.id,
     }
     await post.update(datatoUPdate)

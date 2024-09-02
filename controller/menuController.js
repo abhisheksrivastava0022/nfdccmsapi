@@ -11,7 +11,9 @@ exports.index = CatchAsync(async (req, res, next) => {
     const { id } = req.params;
     const data = await db.menu.findAll(
         {
-            website_setting_id: id
+            where: {
+                website_setting_id: id
+            }
         }
     );
     const output = {

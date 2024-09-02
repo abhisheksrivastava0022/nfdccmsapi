@@ -39,7 +39,7 @@ exports.authenticate = catchAsync(async (req, res, next) => {
     const Users = db.users;
 
     const user = await Users.findOne({
-        attributes: ['id', 'email', 'username'],
+        attributes: ['id', 'email', 'username', 'first_name', 'last_name'],
         where: {
             username: datafetch.username
         }
