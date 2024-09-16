@@ -16,7 +16,7 @@ module.exports = {
       {
         first_name: "Abhishek",
         last_name: "Srivastava",
-        username: "abhishek",
+        username: "abhishek@sisl.info",
         email: "abhishek@sisl.info",
         password: await auth.generatePassword("123456"),
         status: 1,

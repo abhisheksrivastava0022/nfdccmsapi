@@ -51,7 +51,7 @@ module.exports = {
       },
 
     ];
-    return queryInterface.bulkInsert('settings', dataInsert, {});
+    //return queryInterface.bulkInsert('settings', dataInsert, {});
   },
 
   async down(queryInterface, Sequelize) {

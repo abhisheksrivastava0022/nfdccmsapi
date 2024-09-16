@@ -1,7 +1,6 @@
 const CatchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const db = require('../models');
-const { settings } = require("../app");
 const Sequelize = require("sequelize");
 exports.auth = CatchAsync(async (req, res, next) => {
     next();
@@ -39,9 +38,9 @@ exports.index = CatchAsync(async (req, res, next) => {
 
 exports.create = CatchAsync(async (req, res, next) => {
     const postData = req.body;
-    console.log({ postData });
+
     if (postData?.meta_value) {
-        const data = await db.setting.create({
+        await db.setting.create({
             meta: postData.meta,
             meta_value: postData.meta_value,
             setting_id: (postData.setting_id) ? postData.setting_id : null,
@@ -50,6 +49,7 @@ exports.create = CatchAsync(async (req, res, next) => {
     if (postData?.datas) {
         const meta_values = [];
         for (const data of postData.datas) {
+            if (!data) continue;
             meta_values.push(data);
             const setting_value = await db.setting.findOne({
                 where: {
@@ -74,6 +74,13 @@ exports.create = CatchAsync(async (req, res, next) => {
                 meta_value: {
                     [Sequelize.Op.notIn]: meta_values,
                 },
+            },
+        });
+        await db.setting.destroy({
+            where: {
+                // meta: postData.meta,
+                //   setting_id: postData.setting_id,
+                meta_value: null
             },
         });
     }
@@ -102,6 +109,39 @@ exports.update = CatchAsync(async (req, res, next) => {
     res.status(200).json(output);
 })
 
+exports.changeOrAddMeta = CatchAsync(async (req, res, next) => {
+    const postData = req.body;
+
+    if (postData?.meta_value) {
+        const setting = await db.setting.findOne({
+            where: {
+                meta: postData.meta,
+                //meta_value: postData.meta_value,
+                setting_id: (postData.setting_id) ? postData.setting_id : null,
+            }
+        });
+        if (!setting) {
+            await db.setting.create({
+                meta: postData.meta,
+                meta_value: postData.meta_value,
+                setting_id: (postData.setting_id) ? postData.setting_id : null,
+            });
+        } else {
+            setting.update({
+                meta_value: postData.meta_value,
+            });
+        }
+
+    }
+
+    const data = null;
+    const output = {
+        status: true,
+        data,
+        message: ' successfully.'
+    }
+    res.status(200).json(output);
+})
 exports.delete = CatchAsync(async (req, res, next) => {
 
     const { id } = req.params; //req.params {postdata}

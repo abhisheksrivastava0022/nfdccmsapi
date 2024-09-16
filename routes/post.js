@@ -9,7 +9,7 @@ let router = express.Router();
 router
     .route("/")
     // .all(checkUserRole(route.ERP_ITEM))
-    //.get(controller.auth, controller.index)
+    //.get(controller.auth, controller.index) create
     .post(controller.index)
 
 router
@@ -19,7 +19,7 @@ router
 
 router
     .route("/:id(\\d+)")
-    //.get(controller.auth, controller.websiteSetting)
+    //.get(controller.auth, controller.websiteSetting)/craete
     .delete(controller.delete)
     .patch(controller.update)
     .get(controller.detail)
@@ -27,6 +27,10 @@ router
 router
     .route("/feature/:id(\\d+)")
     .patch(controller.addFeature)
+
+router
+    .route("/page/:setting_id(\\d+)")
+    .get(controller.postlist)
 
 
 module.exports = router;

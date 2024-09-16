@@ -1,12 +1,39 @@
 const CatchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const db = require('../models');
-const { settings } = require("../app");
 const Sequelize = require("sequelize");
 
 exports.auth = CatchAsync(async (req, res, next) => {
     next();
 })
+exports.postlist = CatchAsync(async (req, res, next) => {
+
+    const { setting_id } = req.params; //req.params {postdata}
+    const website_setting = await db.setting.findOne({
+        where: {
+            meta: "post",
+            meta_value: "page",
+
+            setting_id
+        }
+    })
+    const post = await db.post.findAll({
+        where: {
+            post_setting_id: website_setting.id,
+            language: 'en',
+        }
+    });
+    // Prepare the output
+    const output = {
+        status: true,
+        data: post,
+        message: ''
+    };
+
+    // Send the response
+    res.status(200).json(output);
+});
+
 exports.index = CatchAsync(async (req, res, next) => {
     const postData = req.body;
     const { page = 0, rowsPerPage = 100, post_setting_id, language } = postData;
@@ -58,10 +85,12 @@ exports.index = CatchAsync(async (req, res, next) => {
 });
 
 
+
 exports.create = CatchAsync(async (req, res, next) => {
     const postData = req.body;
-    let slug = (postData.title).replace(/[^a-zA-Z ]/g, "");
-    slug = (slug).replace(/ /g, "_");
+    let slug = postData.title.replace(/[^a-zA-Z ]/g, "")   // Remove special characters
+        .replace(/ /g, "-")            // Replace spaces with hyphens
+        .toLowerCase();
     const post = await db.post.create({
         slug,
         title: postData.title,

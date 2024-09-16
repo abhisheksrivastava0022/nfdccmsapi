@@ -18,5 +18,10 @@ router
     .delete(controller.delete)
     .patch(controller.update)
 
+router
+    .route("/meta-change-add")
+    .post(controller.auth, controller.changeOrAddMeta)
+
+
 
 module.exports = router;

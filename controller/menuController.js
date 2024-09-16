@@ -1,7 +1,6 @@
 const CatchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const db = require('../models');
-const { settings } = require("../app");
 const Sequelize = require("sequelize");
 exports.auth = CatchAsync(async (req, res, next) => {
     next();
@@ -26,14 +25,14 @@ exports.index = CatchAsync(async (req, res, next) => {
 
 exports.create = CatchAsync(async (req, res, next) => {
     const postData = req.body;
-    await db.menu.create({
+    const data = await db.menu.create({
         name: postData.menu_create,
         // payload_data: postData.payload_data,
         website_setting_id: (postData.website_setting_id),
     });
     const output = {
         status: true,
-        data: "",
+        data: data.id,
         message: 'Menu created successfully.'
     }
     res.status(200).json(output);

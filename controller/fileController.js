@@ -8,7 +8,12 @@ var fs = require('fs-extra');
 const model = db.gallery;
 
 exports.list = CatchAsync(async (req, res, next) => {
-    const data = await db.gallery.findAll();
+    const { id } = req.params; //req.params {postdata}
+    const data = await db.gallery.findAll({
+        where: {
+            website_setting_id: id
+        }
+    });
     const output = {
         status: true,
         data,
@@ -17,7 +22,7 @@ exports.list = CatchAsync(async (req, res, next) => {
     res.status(200).json(output);
 })
 exports.create = CatchAsync(async (req, res, next) => {
-
+    const { id } = req.params; //req.params {postdata}
     var form = new formidable.IncomingForm();
     let originalFilename;
 
@@ -34,7 +39,9 @@ exports.create = CatchAsync(async (req, res, next) => {
 
             if (files?.file?.filepath && files.file.size > 0) {
                 const oldPath = files.file.filepath; // Updated from files.image.filepath
-                const originalFilename = Date.now() + "_" + files.file.originalFilename; // Updated from files.image.originalFilename
+                const fileExtension = (files.file.originalFilename).split('.').pop();
+
+                const originalFilename = Date.now() + "_" + Math.floor(Math.random() * 10000000) + "." + fileExtension; // Updated from files.image.originalFilename
                 const newPath = "public/file/" + originalFilename;
 
                 try {
@@ -57,7 +64,7 @@ exports.create = CatchAsync(async (req, res, next) => {
         message: "Upload successfully."
     };
     if (newPath) {
-        let data = await model.create({ url: newPath, name: newPath });
+        let data = await model.create({ url: newPath, name: newPath, website_setting_id: id });
         if (!data) return next(new AppError(`Database Error`, 500));
         output.id = data.id;
     }
