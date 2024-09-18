@@ -33,18 +33,26 @@ exports.homePage = CatchAsync(async (req, res, next) => {
     if (post.featured_image_id) {
         post.featured_image = await db.gallery.findByPk(post.featured_image_id);
     }
-    post.post_meta = JSON.parse(JSON.stringify((await db.post_meta.findAll({
+    const postmetaobj = JSON.parse(JSON.stringify((await db.post_meta.findAll({
         attributes: ["meta", "meta_value"],
         where: {
             post_id: id
         }
     }))));
+    const post_meta = {};
+    if (postmetaobj) {
+        for (const meta of postmetaobj) {
+            post_meta[meta.meta] = meta.meta_value;
+        }
+    }
+    console.log({ post_meta })
     post.check_other_lang = JSON.parse(JSON.stringify((await db.post.findAll({
         attributes: ["language", "id"],
         where: {
             parent_id: post.parent_id
         }
     }))));
+    post.post_meta = post_meta;
     // Prepare the output
     const output = {
         status: true,
@@ -116,31 +124,33 @@ exports.details = CatchAsync(async (req, res, next) => {
 
     const { slug, language = 'en' } = req.params; //req.params {postdata}
 
-    let post = JSON.parse(JSON.stringify((await db.post.findByPk({
-        slug,
-        language
+    let post = JSON.parse(JSON.stringify((await db.post.findOne({
+        where: {
+            slug,
+            language
+        }
     }))));
     if (!post) {
-        post = JSON.parse(JSON.stringify((await db.post.findByPk({
-            slug,
-            language: "en"
+        post = JSON.parse(JSON.stringify((await db.post.findOne({
+            where: {
+                slug,
+                language
+            }
         }))));
     }
-    if (post.featured_image_id) {
+    if (post?.featured_image_id) {
         post.featured_image = await db.gallery.findByPk(post.featured_image_id);
     }
-    post.post_meta = JSON.parse(JSON.stringify((await db.post_meta.findAll({
-        attributes: ["meta", "meta_value"],
-        where: {
-            post_id: id
-        }
-    }))));
-    post.check_other_lang = JSON.parse(JSON.stringify((await db.post.findAll({
-        attributes: ["language", "id"],
-        where: {
-            parent_id: post.parent_id
-        }
-    }))));
+    if (post?.id) {
+        post.post_meta = JSON.parse(JSON.stringify((await db.post_meta.findAll({
+            attributes: ["meta", "meta_value"],
+            where: {
+                post_id: post.id
+            }
+        }))));
+    }
+
+
     // Prepare the output
     const output = {
         status: true,

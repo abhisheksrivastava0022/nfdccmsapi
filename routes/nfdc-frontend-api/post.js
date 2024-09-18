@@ -10,5 +10,9 @@ router
     .route("/")
     .get(controller.homePage)
 
+router
+    .route("/:slug/:language")
+    .get(controller.details)
+
 
 module.exports = router;

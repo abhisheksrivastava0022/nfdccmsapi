@@ -192,7 +192,7 @@ exports.detail = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
 
     const post = JSON.parse(JSON.stringify((await db.post.findByPk(id))));
-    if (post.featured_image_id) {
+    if (post?.featured_image_id) {
         post.featured_image = await db.gallery.findByPk(post.featured_image_id);
     }
     post.post_meta = JSON.parse(JSON.stringify((await db.post_meta.findAll({
