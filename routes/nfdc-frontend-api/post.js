@@ -7,7 +7,7 @@ let router = express.Router();
 //const { route } = require('../constants/access_module');
 //const { checkUserRole } = require('../helper/auth');
 router
-    .route("/")
+    .route("/:language")
     .get(controller.homePage)
 
 router

@@ -28,7 +28,7 @@ exports.details = CatchAsync(async (req, res, next) => {
                         // Find the post based on post_id and language
                         const post = await db.post.findOne({
                             where: {
-                                id: item.post_id,
+                                parent_id: item.post_id,
                                 language
                             }
                         });
@@ -37,6 +37,10 @@ exports.details = CatchAsync(async (req, res, next) => {
                         if (post?.slug) {
                             item.url = post.slug;
                         }
+                        if (language != 'en') {
+                            item.text = post.title
+                        }
+
                     }
 
                     // If there are children, recursively update their URLs

@@ -7,7 +7,7 @@ exports.auth = CatchAsync(async (req, res, next) => {
     next();
 })
 exports.homePage = CatchAsync(async (req, res, next) => {
-
+    const { language = 'en' } = req.params; //req.params {postdata}
     // const { setting_id } = req.params; //req.params {postdata}
     const website = await db.setting.findOne({
         where: {
@@ -16,6 +16,7 @@ exports.homePage = CatchAsync(async (req, res, next) => {
 
         }
     })
+
     if (!website) {
         // show error
     }
@@ -29,8 +30,15 @@ exports.homePage = CatchAsync(async (req, res, next) => {
         // show error
     }
     const id = websiteSetting.meta_value;
-    const post = JSON.parse(JSON.stringify((await db.post.findByPk(websiteSetting.meta_value))));
-    if (post.featured_image_id) {
+    const post = JSON.parse(JSON.stringify((await db.post.findOne({
+        where: {
+            parent_id: websiteSetting.meta_value,
+            language
+        }
+    }))));
+
+
+    if (post?.featured_image_id) {
         post.featured_image = await db.gallery.findByPk(post.featured_image_id);
     }
     const postmetaobj = JSON.parse(JSON.stringify((await db.post_meta.findAll({
@@ -45,7 +53,6 @@ exports.homePage = CatchAsync(async (req, res, next) => {
             post_meta[meta.meta] = meta.meta_value;
         }
     }
-    console.log({ post_meta })
     post.check_other_lang = JSON.parse(JSON.stringify((await db.post.findAll({
         attributes: ["language", "id"],
         where: {
@@ -53,14 +60,12 @@ exports.homePage = CatchAsync(async (req, res, next) => {
         }
     }))));
     post.post_meta = post_meta;
-    // Prepare the output
     const output = {
         status: true,
         data: post,
         message: ''
     };
 
-    // Send the response
     res.status(200).json(output);
 });
 
