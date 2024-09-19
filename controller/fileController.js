@@ -33,7 +33,6 @@ exports.create = CatchAsync(async (req, res, next) => {
                 return;
             }
 
-            //  console.log({ data: files1?.file });
             const files = {};
             files.file = Array.isArray(files1.file) ? files1.file[0] : files1.file;
 
@@ -58,7 +57,6 @@ exports.create = CatchAsync(async (req, res, next) => {
         });
     });
 
-    console.log({ newPath });
     const output = {
         status: true,
         message: "Upload successfully."

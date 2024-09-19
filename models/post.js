@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.hasMany(models.post_meta, {
+        foreignKey: 'post_id',   // Foreign key in the post_meta table
+        as: 'post_meta'          // Alias for this association
+      });
     }
   }
   post.init({

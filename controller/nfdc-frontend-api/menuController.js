@@ -11,11 +11,24 @@ exports.details = CatchAsync(async (req, res, next) => {
     const { name, language = 'en' } = req.params;
 
     // Fetch the menu from the database
-    let menu = JSON.parse(JSON.stringify(await db.menu.findOne({
-        where: {
-            name
-        }
-    })));
+    let menu
+    if (language != '') {
+        menu = JSON.parse(JSON.stringify(await db.menu.findOne({
+            where: {
+                name: (name + "-" + language)
+            }
+        })));
+    }
+    if (!menu) {
+        menu = JSON.parse(JSON.stringify(await db.menu.findOne({
+            where: {
+                name
+            }
+        })));
+    }
+
+
+
 
     if (menu?.payload_data) {
         let payload_data = JSON.parse(menu?.payload_data);
@@ -37,7 +50,7 @@ exports.details = CatchAsync(async (req, res, next) => {
                         if (post?.slug) {
                             item.url = post.slug;
                         }
-                        if (language != 'en') {
+                        if (!item.text && language != 'en') {
                             item.text = post.title
                         }
 
@@ -56,7 +69,7 @@ exports.details = CatchAsync(async (req, res, next) => {
 
         // Assign the updated payload_data back to the menu
         menu.payload_data = JSON.stringify(payload_data);
-        console.log(menu.payload_data)
+
     }
 
     // Create the output response

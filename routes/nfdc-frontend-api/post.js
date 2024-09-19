@@ -11,8 +11,13 @@ router
     .get(controller.homePage)
 
 router
+    .route("/type/:type/:language")
+    .get(controller.getPostsForPosttype)
+
+router
     .route("/:slug/:language")
     .get(controller.details)
+
 
 
 module.exports = router;

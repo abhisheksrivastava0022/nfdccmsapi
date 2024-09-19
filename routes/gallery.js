@@ -105,7 +105,7 @@ router
 
         // Correct the file path by navigating one level up from the 'routes' directory
         const filePath = path.join(__dirname, '..', 'public', 'file', filename);
-        console.log(filePath);  // Log the correct file path
+        // console.log(filePath);  // Log the correct file path
 
         const fileExtension = filename.split('.').pop();
         const contentType = getContentType(fileExtension);
@@ -133,7 +133,7 @@ router
             return next(new AppError('File not found', 404));
         }
         const filePath = path.join(__dirname, '..', 'public', 'file', filename);
-        console.log(filePath);  // Log the correct file path
+        // console.log(filePath);  // Log the correct file path
 
         const fileExtension = filename.split('.').pop();
         const contentType = getContentType(fileExtension);

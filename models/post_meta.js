@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.post, {
+        foreignKey: 'post_id',   // Assumes the foreign key is 'post_id' in post_meta table
+        as: 'post'               // Alias for this association
+      });
     }
   }
   post_meta.init({
