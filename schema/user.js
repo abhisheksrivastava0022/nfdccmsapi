@@ -61,3 +61,7 @@ exports.changeTokenPassword = Joi.object({
     token: Joi.string().max(1000).required(),
     change_password: Joi.string().required(),
 })
+
+exports.subcribe = Joi.object({
+    email: Joi.string().email().required(),
+})

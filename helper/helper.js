@@ -1,4 +1,4 @@
-var axios = require("axios");
+const axios = require("axios");
 
 exports.getBase64Image = async (img) => {
     try {
@@ -32,11 +32,11 @@ exports.CombinCompareData = (data1, data2) => {
 
     const builddata = []
     for (let month = 1; month <= 12; month++) {
-       // builddata[month] = {};
+        // builddata[month] = {};
         builddata.push({
             month,
-            data1: year1data?.[month]??0,
-            data2: year2data?.[month]??0,
+            data1: year1data?.[month] ?? 0,
+            data2: year2data?.[month] ?? 0,
 
         });
 
@@ -55,11 +55,11 @@ exports.CombinCompareDataCount = (data1, data2) => {
 
     const builddata = []
     for (let month = 1; month <= 12; month++) {
-      //  builddata[month] = {};
+        //  builddata[month] = {};
         builddata.push({
             month,
-            data1: year1data?.[month]??0,
-            data2: year2data?.[month]??0,
+            data1: year1data?.[month] ?? 0,
+            data2: year2data?.[month] ?? 0,
 
         });
     }

@@ -7,7 +7,7 @@ const md5 = require('md5');
 const AppError = require('../utils/appError')
 const appconfig = require('../config/appconfig');
 const { access_module } = require('../constants/access_module');
-var saltRounds = 10;
+const saltRounds = 10;
 const crypto = require('crypto');
 const CatchAsync = require("../utils/catchAsync");
 
@@ -104,7 +104,7 @@ exports.checkUserRole = (route_name) => {
     }
 }
 exports.verifyVendor = async (req, res, next) => {
-    var db = require("../models");
+    const db = require("../models");
     // console.log(req.userlogin.id);return;
     const vendor_user = await db.vendor_user.findOne({ where: { user_id: req.userlogin.id } });
     if (!vendor_user) return next(new AppError(`Vendor Not Assigned ${req.path}`, 401))
@@ -162,15 +162,15 @@ exports.verifyVendorWithQuotation = async (req, res, next) => {
     next();
 }
 exports.verifyToken = async (req, res, next) => {
-    var output = {};
+    const output = {};
     output['status'] = 401;
 
     try {
         if (req.cookies.access_token != undefined) {
-            var db = require("../models");
-            var Users = db.users;
-            var access_token = req.cookies.access_token;
-            var user = new Users;
+            const db = require("../models");
+            const Users = db.users;
+            const access_token = req.cookies.access_token;
+            const user = new Users;
             user.token = access_token;
             userlogin = await user.VerifyToken();
             if (userlogin) {

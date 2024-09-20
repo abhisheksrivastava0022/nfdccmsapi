@@ -178,7 +178,7 @@ exports.vendorRole = CatchAsync(async (req, res, next) => {
 
 exports.updateUser = CatchAsync(async (req, res, next) => {
 
-	var postData = req.body;
+	const postData = req.body;
 	const { id } = req.params;
 	const user_roles = (postData?.user_roles) ? postData.user_roles : [];
 	const User = await Users.findByPk(id);
@@ -332,7 +332,7 @@ exports.delete = CatchAsync(async (req, res, next) => {
 	const output = {};
 	const { id } = req.params; //req.params
 	output['status'] = true;
-	var data = await Users.findByPk(id);
+	const data = await Users.findByPk(id);
 
 	if (!data) return next(new AppError(`No data Found`, 404));
 
@@ -344,8 +344,8 @@ exports.delete = CatchAsync(async (req, res, next) => {
 exports.changeUserPassword = CatchAsync(async (req, res, next) => {
 
 	const { id } = req.params; //req.params
-	var postData = req.body;
-	var user = new Users;
+	const postData = req.body;
+	const user = new Users;
 	await user.changeUserPasswword(postData.change_password, id);
 
 	eventEmitter.emit(eventContant.PASSWORD_RESET, id, Date.now());
@@ -359,8 +359,8 @@ exports.changeUserPassword = CatchAsync(async (req, res, next) => {
 
 exports.passwordChange = CatchAsync(async (req, res, next) => {
 	const id = req.userlogin.id; //req.params
-	var postData = req.body;
-	var user = new Users;
+	const postData = req.body;
+	const user = new Users;
 	const checkvalidation = await user.changePasswword(postData.current_password, postData.change_password, id);
 	//console.log(checkvalidation);
 	if (checkvalidation['status'] != 200)
