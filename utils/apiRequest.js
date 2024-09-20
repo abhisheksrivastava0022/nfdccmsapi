@@ -1,5 +1,5 @@
 const axios = require('axios');
-var db = require("../models");
+const db = require("../models");
 const winston = require('winston');
 //const {updateContactInfo,updateproject} = require("./handleApiReq");
 const appconfig = require("../config/appconfig");
@@ -104,21 +104,21 @@ const apiRequest = async (method, url, data, api_name = null, primary_id = null,
         }
         return response.data;
         //  await updateproject(primary_id,dealId);
-      } else if(typeof api_name !== "undefined" && api_name && api_name == "add_product") {
+      } else if (typeof api_name !== "undefined" && api_name && api_name == "add_product") {
         const createdProduct = response.data;
         let productId = createdProduct.objectId;
-       
+
         if (productId) {
           const product = await db.product.findByPk(primary_id);
           let currentDate = new Date();
           let futureDate = new Date(currentDate.getTime() + 30 * 60 * 1000);
           let formattedFutureDate = futureDate.toISOString().slice(0, 19).replace("T", " ");
-          
-          await product.update({ 'hubspot_id': productId,'is_product_sync': formattedFutureDate });
+
+          await product.update({ 'hubspot_id': productId, 'is_product_sync': formattedFutureDate });
         }
         return response.data;
 
-      }else if(typeof api_name !== "undefined" && api_name && api_name == "addItem"){
+      } else if (typeof api_name !== "undefined" && api_name && api_name == "addItem") {
         // const productItems = response.data;
         // const Item_id = productItems.objectId;
         // if (productId) {
@@ -127,14 +127,14 @@ const apiRequest = async (method, url, data, api_name = null, primary_id = null,
         // }
         return response.data;
 
-      }else if(typeof api_name !== "undefined" && api_name && api_name == "update_product") {
-        
+      } else if (typeof api_name !== "undefined" && api_name && api_name == "update_product") {
+
         const product = await db.product.findByPk(primary_id);
         let currentDate = new Date();
         let futureDate = new Date(currentDate.getTime() + 30 * 60 * 1000);
         let formattedFutureDate = futureDate.toISOString().slice(0, 19).replace("T", " ");
-        await product.update({'is_product_sync': formattedFutureDate });
-      }else{
+        await product.update({ 'is_product_sync': formattedFutureDate });
+      } else {
         return response.data;
       }
 
@@ -160,19 +160,19 @@ const apiRequest = async (method, url, data, api_name = null, primary_id = null,
           }
         }
 
-      }else if(api_name =="twinfield_purchase_bill" ){
-          const purchase_bill = await db.purchase_bill.findByPk(primary_id);
-          await purchase_bill.update({ 'twinfield_id': innerParsedData.transaction.header.number});
-      } else if(api_name =="twinfield_send_invoice" || api_name =="twinfield_send_credit_notes" || api_name=="twinfield_send_elure"){
-          const purchase_bill = await db.invoice.findByPk(primary_id);
-          await purchase_bill.update({ 'twinfield_id': innerParsedData.transaction.header.number});
-      }else{
+      } else if (api_name == "twinfield_purchase_bill") {
+        const purchase_bill = await db.purchase_bill.findByPk(primary_id);
+        await purchase_bill.update({ 'twinfield_id': innerParsedData.transaction.header.number });
+      } else if (api_name == "twinfield_send_invoice" || api_name == "twinfield_send_credit_notes" || api_name == "twinfield_send_elure") {
+        const purchase_bill = await db.invoice.findByPk(primary_id);
+        await purchase_bill.update({ 'twinfield_id': innerParsedData.transaction.header.number });
+      } else {
         return parsedData;
       }
 
     }
   } catch (error) {
-   
+
 
     if (type == 0) {
 
@@ -193,7 +193,7 @@ const apiRequest = async (method, url, data, api_name = null, primary_id = null,
         logger.error(`Error ${method.toUpperCase()} ${url}`, { data, error });
       }
     } else if (type == 1) {
-     
+
       if (error.response.status == 401) {
         await refreshToken();
       } else {
@@ -242,7 +242,7 @@ module.exports = {
   },
 
   async put(url, data, api_name, primary_id, type = 0, hubspot_id = 0) {
-    return apiRequest('put',url, data, api_name, primary_id, type, hubspot_id);
+    return apiRequest('put', url, data, api_name, primary_id, type, hubspot_id);
   },
 
   async patch(url, data, type = 0) {

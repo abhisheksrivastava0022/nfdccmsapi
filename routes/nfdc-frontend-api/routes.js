@@ -3,6 +3,7 @@ const router = express.Router();
 
 const postRoute = require('./post');
 const menuRoute = require('./menu');
+const subscribeRoute = require('./subscribe');
 
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
@@ -30,6 +31,7 @@ router.use(cookieParser());
 
 router.use("/post", postRoute);
 router.use("/menu", menuRoute);
+router.use("/subscribe", subscribeRoute);
 
 // router.use((req, res, next) => {
 //     next(new AppError(`Can't find ${req.originalUrl} to this server`, 404)); // if we pass any parameter in next then react automatic understand that error occured

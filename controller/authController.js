@@ -162,9 +162,9 @@ exports.authenticateCms = catchAsync(async (req, res, next) => {
 
     access_token = cms_access_token
 
-    var db = require("../models");
-    var Users = db.users;
-    var user = new Users;
+    const db = require("../models");
+    const Users = db.users;
+    const user = new Users;
     user.token = access_token;
     const userlogin = await user.VerifyToken(db);
 

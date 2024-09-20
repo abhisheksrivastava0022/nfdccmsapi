@@ -1,7 +1,7 @@
 const auth = require("../helper/auth");
 const { roles } = require("../constants/access_module");
 const { rolesPermission, permission, user_roles } = require("../constants/user");
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 ("use strict");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
@@ -137,7 +137,7 @@ module.exports = (sequelize, DataTypes) => {
         if (!user) return false;
 
 
-        var check = await auth.verifyPassword(
+        const check = await auth.verifyPassword(
           this.pass,
           user["dataValues"]["password"]
         );
@@ -157,7 +157,7 @@ module.exports = (sequelize, DataTypes) => {
       // console.log(user_login_id);
       try {
         const user = await Users.findByPk(user_login_id);
-        var password = await auth.generatePassword(change_password);
+        const password = await auth.generatePassword(change_password);
         if (await user.update({ password: password })) {
           dataoutput["status"] = 200;
           dataoutput["message"] = "Data saved successfully";
@@ -174,12 +174,12 @@ module.exports = (sequelize, DataTypes) => {
       // console.log(user_login_id);
       try {
         const user = await Users.findByPk(user_login_id);
-        var check = await auth.verifyPassword(
+        const check = await auth.verifyPassword(
           current_password,
           user.password
         );
         if (check === true) {
-          var password = await auth.generatePassword(change_password);
+          const password = await auth.generatePassword(change_password);
           if (await user.update({ password: password })) {
             dataoutput["status"] = 200;
             dataoutput["message"] = "Data saved successfully";
@@ -241,7 +241,7 @@ module.exports = (sequelize, DataTypes) => {
             msg: 'Username cannot be an empty string.', // Custom error message for empty string
           },
           isUnique: async function (value, next) {
-            var self = this;
+            const self = this;
             let datarel = await Users.findOne({ where: { username: value } });
 
 
@@ -272,7 +272,7 @@ module.exports = (sequelize, DataTypes) => {
             msg: 'Email cannot be an empty string.', // Custom error message for empty string
           },
           isUnique: async function (value, next) {
-            var self = this;
+            const self = this;
             let datarel = await Users.findOne({ where: { email: value } });
 
 

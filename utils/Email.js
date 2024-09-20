@@ -1,5 +1,5 @@
 
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
 
 class Email {
@@ -11,7 +11,7 @@ class Email {
 
     }
     async newTransport() {
-        return  await nodemailer.createTransport({
+        return await nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: 'abhisheksrivastava0022@gmail.com',
@@ -21,12 +21,12 @@ class Email {
     }
     async send(template, subject) {
         console.log("success")
-      
+
         console.log(html);
-        var mailOptions = {
+        const mailOptions = {
             from: this.from,
             to: this.to,
-            subject, 
+            subject,
             html
         };
         console.log("test");
@@ -35,7 +35,7 @@ class Email {
         await transporter.sendMail(mailOptions);
     }
     async sendWelcome() {
-       await  this.send("templateName", "subjectName")
+        await this.send("templateName", "subjectName")
     }
 }
 //new Email("user", "url").sendWelcome();

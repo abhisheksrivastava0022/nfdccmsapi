@@ -1,10 +1,10 @@
-var db = require("../models");
-var CatchAsync = require("../utils/catchAsync");
-var AppError = require("../utils/appError");
-var appconfig = require("../config/appconfig");
+const db = require("../models");
+const CatchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
+const appconfig = require("../config/appconfig");
 const APIFeatures = require("../utils/apiFeature");
-var formidable = require('formidable');
-var fs = require('fs-extra');
+const formidable = require('formidable');
+const fs = require('fs-extra');
 const model = db.gallery;
 
 exports.list = CatchAsync(async (req, res, next) => {
@@ -23,7 +23,7 @@ exports.list = CatchAsync(async (req, res, next) => {
 })
 exports.create = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
-    var form = new formidable.IncomingForm();
+    const form = new formidable.IncomingForm();
     let originalFilename;
 
     const { newPath } = await new Promise((resolve, reject) => {
