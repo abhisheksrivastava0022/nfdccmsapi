@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11'];
 
 router.use(cors({
     origin: (origin, callback) => {

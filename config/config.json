@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "cms1_dev",
+    "username": "nfdc",
+    "password": "Opac@1$ilp",
+    "database": "cms_nfdc",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging":false
