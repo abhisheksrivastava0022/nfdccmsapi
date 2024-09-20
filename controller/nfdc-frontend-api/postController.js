@@ -246,3 +246,127 @@ exports.details = CatchAsync(async (req, res, next) => {
     // Send the response
     res.status(200).json(output);
 });
+
+exports.search = CatchAsync(async (req, res, next) => {
+    const { type, language } = req.params; // Extract post type and language from request params
+    const { page = 1, limit = 10 } = req.query; // Extract page and limit from query, with default values
+    const query = req.query;
+    // Find website setting
+    const website = await db.setting.findOne({
+        where: {
+            meta: "website",
+            meta_value: "nfdc",
+        }
+    });
+
+    if (!website) {
+        return res.status(404).json({
+            status: false,
+            message: "Website not found"
+        });
+    }
+
+    const websiteSettings = await db.setting.findAll({
+        where: {
+            meta: "post",
+            setting_id: website.id,
+            //   meta_value: type
+        }
+    });
+    const post_setting_id = [];
+    if (websiteSettings) {
+        for (const websiteSetting of websiteSettings) {
+            post_setting_id.push(websiteSetting.id);
+        }
+    }
+
+
+    const offset = (page - 1) * limit; // Calculate offset
+
+    // Find posts with pagination
+    const where = {
+        post_setting_id: post_setting_id,
+        language
+    }
+    if (query?.title) {
+        // Use LIKE query for title with wildcard characters
+        where.title = { [Op.like]: `%${query.title}%` };
+
+    }
+    let postMetaWhere = null;
+    if (query?.tendor_number) {
+        postMetaWhere = {
+            meta: 'tendor_number',
+            meta_value: query.tendor_number,
+        };
+    }
+    let include = null;
+    if (postMetaWhere) {
+        include = [{
+            model: db.post_meta,
+            as: 'post_meta', // Use the appropriate alias if you've defined one
+            where: postMetaWhere,
+            required: true // Ensures only posts with matching post_meta are returned
+        }]
+    }
+    const posts = JSON.parse(JSON.stringify(
+        await db.post.findAll({
+            include,
+            where,
+            limit: parseInt(limit), // Set limit per page
+            offset: parseInt(offset), // Set offset for pagination
+            order: [['createdAt', 'DESC']]
+        })
+    ));
+
+    // Fetch additional data for each post
+    for (const postkey in posts) {
+        if (posts[postkey].featured_image_id) {
+            posts[postkey].featured_image = await db.gallery.findByPk(posts[postkey].featured_image_id);
+        }
+
+        const postmetaobj = JSON.parse(JSON.stringify(
+            await db.post_meta.findAll({
+                attributes: ["meta", "meta_value"],
+                where: {
+                    post_id: posts[postkey].id
+                }
+            })
+        ));
+
+        const post_meta = {};
+        if (postmetaobj) {
+            for (const meta of postmetaobj) {
+                post_meta[meta.meta] = meta.meta_value;
+            }
+        }
+        posts[postkey].post_meta = post_meta;
+    }
+
+    // Prepare pagination information
+    const totalPosts = await db.post.count({
+        include,
+        where,
+        limit: parseInt(limit), // Set limit per page
+        offset: parseInt(offset), // Set offset for pagination
+        order: [['createdAt', 'DESC']]
+    });
+
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    // Prepare the output with pagination details
+    const output = {
+        status: true,
+        data: posts,
+        pagination: {
+            totalPosts,
+            totalPages,
+            currentPage: parseInt(page),
+            limit: parseInt(limit)
+        },
+        message: ''
+    };
+
+    // Send the response
+    res.status(200).json(output);
+});

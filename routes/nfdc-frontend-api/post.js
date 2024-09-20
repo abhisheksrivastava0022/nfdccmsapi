@@ -9,6 +9,9 @@ let router = express.Router();
 router
     .route("/:language")
     .get(controller.homePage)
+router
+    .route("/search/:language")
+    .get(controller.search)
 
 router
     .route("/type/:type/:language")
