@@ -133,10 +133,10 @@ exports.update = CatchAsync(async (req, res, next) => {
     if (postData?.fields) {
 
         for (const field of postData?.fields) {
-            post_meta_list.push(field.meta)
+            post_meta_list.push((field.meta).trim())
             const check_post_meta = await db.post_meta.findOne({
                 where: {
-                    meta: field.meta,
+                    meta: (field.meta).trim(),
                     meta_type: 1,
                     post_id: id
                 }
