@@ -92,6 +92,36 @@ function getContentType(fileExtension) {
 }
 
 
+router
+    .route("/:size/:filename")
+    .get(async (req, res, next) => {
+        let { filename = null, size = null } = req.params;
+
+        if (!filename) {
+            return next(new AppError('File not found', 404));
+        }
+
+        // Correct the file path by navigating one level up from the 'routes' directory
+        const filePath = path.join(__dirname, '..', 'public', 'file', size, filename);
+        // console.log(filePath);  // Log the correct file path
+
+        const fileExtension = filename.split('.').pop();
+        const contentType = getContentType(fileExtension);
+
+        // Check if the file exists at the constructed path
+        if (fs.existsSync(filePath)) {
+            // Set Content-Disposition to inline to display in the browser
+            res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+            res.setHeader('Content-Type', contentType);
+
+            // Create a stream to send the file
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+        } else {
+            return next(new AppError('File not found', 404));
+        }
+    });
+
 
 
 router
