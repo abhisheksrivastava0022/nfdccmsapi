@@ -32,5 +32,9 @@ router
     .route("/page/:setting_id(\\d+)")
     .get(controller.postlist)
 
+router
+    .route("/count/:setting_id(\\d+)")
+    .get(controller.postCount)
+
 
 module.exports = router;

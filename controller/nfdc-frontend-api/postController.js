@@ -107,6 +107,7 @@ exports.getPostsForPosttype = CatchAsync(async (req, res, next) => {
 
     // Find posts with pagination
     const where = {
+        status: 1,
         post_setting_id: websiteSetting.id,
         language
     }
@@ -201,7 +202,8 @@ exports.details = CatchAsync(async (req, res, next) => {
     let post = JSON.parse(JSON.stringify((await db.post.findOne({
         where: {
             slug,
-            language
+            language,
+            status: 1,
         }
     }))));
     if (!post) {
@@ -220,7 +222,8 @@ exports.details = CatchAsync(async (req, res, next) => {
             await db.post_meta.findAll({
                 attributes: ["meta", "meta_value"],
                 where: {
-                    post_id: post.id
+                    post_id: post.id,
+
                 }
             })
         ));
@@ -256,6 +259,7 @@ exports.search = CatchAsync(async (req, res, next) => {
         where: {
             meta: "website",
             meta_value: "nfdc",
+
         }
     });
 
@@ -285,6 +289,7 @@ exports.search = CatchAsync(async (req, res, next) => {
 
     // Find posts with pagination
     const where = {
+        status: 1,
         post_setting_id: post_setting_id,
         language
     }
