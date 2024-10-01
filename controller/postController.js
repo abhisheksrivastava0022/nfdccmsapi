@@ -226,6 +226,7 @@ exports.addFeature = CatchAsync(async (req, res, next) => {
     }
     res.status(200).json(output);
 })
+
 exports.detail = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
 
