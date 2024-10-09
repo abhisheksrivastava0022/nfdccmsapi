@@ -13,7 +13,8 @@ exports.list = CatchAsync(async (req, res, next) => {
     const data = await db.gallery.findAll({
         where: {
             website_setting_id: id
-        }
+        },
+        order: [['id', 'DESC']]
     });
     const output = {
         status: true,
@@ -188,7 +189,6 @@ exports.delete = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
     const post = await db.gallery.findByPk(id);
     await post.destroy();
-
     const data = null;
     const output = {
         status: true,

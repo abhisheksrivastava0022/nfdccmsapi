@@ -91,7 +91,31 @@ function getContentType(fileExtension) {
     }
 }
 
+router
+    .route("/download/:filename")
+    .get((req, res, next) => {
 
+        let { filename = null } = req.params;
+
+        if (!filename) {
+            return next(new AppError('File not found1', 404));
+        }
+        const filePath = path.join(__dirname, '..', 'public', 'file', filename);
+        // console.log(filePath);  // Log the correct file path
+
+        const fileExtension = filename.split('.').pop();
+        const contentType = getContentType(fileExtension);
+        if (fs.existsSync(filePath)) {
+            res.download(filePath, filename, (err) => {
+                if (err) {
+                    res.status(500).send('Internal Server Error');
+                }
+            });
+        } else {
+            return next(new AppError('File not found1', 404));
+        }
+
+    });
 router
     .route("/:size/:filename")
     .get(async (req, res, next) => {
@@ -103,7 +127,6 @@ router
 
         // Correct the file path by navigating one level up from the 'routes' directory
         const filePath = path.join(__dirname, '..', 'public', 'file', size, filename);
-        // console.log(filePath);  // Log the correct file path
 
         const fileExtension = filename.split('.').pop();
         const contentType = getContentType(fileExtension);
@@ -135,7 +158,6 @@ router
 
         // Correct the file path by navigating one level up from the 'routes' directory
         const filePath = path.join(__dirname, '..', 'public', 'file', filename);
-        // console.log(filePath);  // Log the correct file path
 
         const fileExtension = filename.split('.').pop();
         const contentType = getContentType(fileExtension);
@@ -154,30 +176,5 @@ router
         }
     });
 
-router
-    .route("/:filename/download")
-    .get((req, res, next) => {
-        let { filename = null } = req.params;
-
-        if (!filename) {
-            return next(new AppError('File not found', 404));
-        }
-        const filePath = path.join(__dirname, '..', 'public', 'file', filename);
-        // console.log(filePath);  // Log the correct file path
-
-        const fileExtension = filename.split('.').pop();
-        const contentType = getContentType(fileExtension);
-        if (fs.existsSync(filePath)) {
-            res.download(filePath, filename, (err) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send('Internal Server Error');
-                }
-            });
-        } else {
-            return next(new AppError('File not found', 404));
-        }
-
-    });
 
 module.exports = router;
