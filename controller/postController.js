@@ -6,6 +6,44 @@ const Sequelize = require("sequelize");
 exports.auth = CatchAsync(async (req, res, next) => {
     next();
 })
+
+exports.postCount = CatchAsync(async (req, res, next) => {
+
+    const { setting_id } = req.params; //req.params {postdata}
+
+    const posts = await db.setting.findAll({
+        where: {
+            meta: "post",
+            setting_id
+        }
+    })
+    const data = [];
+    for (const postobj of posts) {
+        const postcount = await db.post.count({
+            where: {
+                post_setting_id: postobj.id,
+                language: 'en',
+            }
+        });
+
+        data.push({
+            post_id: postobj.id,
+            post_name: postobj.meta_value,
+            count: postcount,
+        });
+    }
+
+    // Prepare the output
+    const output = {
+        status: true,
+        data: data,
+        message: ''
+    };
+
+    // Send the response
+    res.status(200).json(output);
+});
+
 exports.postlist = CatchAsync(async (req, res, next) => {
 
     const { setting_id } = req.params; //req.params {postdata}
@@ -188,6 +226,7 @@ exports.addFeature = CatchAsync(async (req, res, next) => {
     }
     res.status(200).json(output);
 })
+
 exports.detail = CatchAsync(async (req, res, next) => {
     const { id } = req.params; //req.params {postdata}
 
