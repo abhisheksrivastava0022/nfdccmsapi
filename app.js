@@ -8,7 +8,14 @@ const fs = require('fs');
 const cors = require('cors');  // Import the CORS middleware
 const bodyParser = require('body-parser');
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11',
+    'https://119.82.68.149',
+    'http://119.82.68.149',
+    'http://192.168.1.82:3000',
+    'https://192.168.1.82:3000',
+    '192.168.1.82',
+
+];
 
 app.use(cors({
     origin: (origin, callback) => {

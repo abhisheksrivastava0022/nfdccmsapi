@@ -25,6 +25,7 @@ exports.logout = catchAsync(async (req, res, next) => {
 })
 
 exports.authenticate = catchAsync(async (req, res, next) => {
+    await res.cookie('cms_access_token', "token", { sameSite: 'None', maxAge: 10000 * 24 * 3000 * 30, httpOnly: true, secure: true });
 
     if (!req.cookies.access_token)
         return next(new AppError(`Unauthorized Access ${req.path}`, 401))
