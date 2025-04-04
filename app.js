@@ -8,7 +8,8 @@ const fs = require('fs');
 const cors = require('cors');  // Import the CORS middleware
 const bodyParser = require('body-parser');
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11',
+const allowedOrigins = [
+    'http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11',
     'https://119.82.68.149',
     'http://119.82.68.149',
     'http://192.168.1.82:3000',
@@ -27,7 +28,7 @@ app.use(cors({
     },
     credentials: true
 }));
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

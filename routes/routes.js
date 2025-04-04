@@ -12,7 +12,11 @@ const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.11', 'https://192.168.1.11'
+const allowedOrigins = [
+    'http://localhost:3000', 
+    'http://localhost:3001', 
+    'http://192.168.1.11',
+    'https://192.168.1.11'
 
     , 'https://119.82.68.149',
     'http://119.82.68.149',
@@ -32,7 +36,7 @@ router.use(cors({
     credentials: true
 }));
 
-
+// post data we can read
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 router.use(bodyParser.json());

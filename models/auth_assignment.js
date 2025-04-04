@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.hasOne(models.auth_item, { foreignKey: 'name', sourceKey: "item_name" })
     }
-    async updatePermsion(permision,user_id_data){
+    static async updatePermsion(permision,user_id_data){
       const user =  await this.create({user_id:user_id_data,item_name:permision  });
-      user.save();
+      await user.save();
     }
     async getUserpermissionsById(user_id_data){
    

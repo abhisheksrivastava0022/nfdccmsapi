@@ -248,6 +248,58 @@ exports.update = CatchAsync(async (req, res, next) => {
 		status: postData.status,
 	}
 	await User.update(userData);
+
+	// roles and permission  auth_assignment me insert user_id with item_name 
+
+	// { permissiion array role array}
+	// loop  postData.permissiion  postData.role []
+	await  db.auth_assignment.destroy({
+		where :{
+			user_id:id
+		}
+	})
+	if(postData.permission){
+		await  db.auth_assignment.destroy({
+			where :{
+				user_id:id
+			}
+		})
+		for(const data of postData.permission){
+			
+			const datatobeinsert= {
+				item_name:data,
+				user_id:id
+			}
+			const checkdataexitst  =await  db.auth_assignment.findOne({
+				where :datatobeinsert
+			})
+			if(!checkdataexitst)
+				await db.auth_assignment.create(datatobeinsert);
+		}
+	}
+	if(postData.role){
+		for(const data of postData.role){
+			const datatobeinsert= {
+				item_name:data,
+				user_id:id
+			}
+			const checkdataexitst  =await  db.auth_assignment.findOne({
+				where :datatobeinsert
+			})
+			if(!checkdataexitst)
+				await db.auth_assignment.create(datatobeinsert);
+		}
+	}
+	
+	// for(const data of postData.roles){
+	// 	const datatobeinsert= {
+	// 		name:data,
+			
+	// 	}
+	// 	await db.auth_item.create(datatobeinsert);
+	// }
+	
+	
 	const output = {
 		status: true,
 		data: {},
@@ -257,22 +309,36 @@ exports.update = CatchAsync(async (req, res, next) => {
 })
 exports.detailUserLogin = CatchAsync(async (req, res) => {
 
-	const data = JSON.parse(JSON.stringify(req.userlogin));
-	const metaData = JSON.parse(JSON.stringify(await db.user_meta.findAll({
-		where: {
-			user_id: data.id,
-
-		}
-	})));
-	const metaDatas = {};
-	for (const meta of metaData) {
-		metaDatas[meta.meta] = meta.meta_value
-	}
-	data.user_meta = metaDatas;
+	//const data = JSON.parse(JSON.stringify(req.userlogin));
+	const user = JSON.parse(JSON.stringify(await Users.findOne({
+		attributes: ["id", "first_name", "last_name", "email", "username", "status"],
+		include: [
+		  {
+			model: db.auth_assignment,
+			attributes: ["item_name"], // Fetch role/permission names
+			include: [
+			  {
+				model: db.auth_item,
+				attributes: ["id", "name", "type", "description"], // Fetch permission details
+			  }
+			]
+		  }
+		]
+	})))
+	if (!user) return next(new AppError(`No data Found`, 404));
+	user.role=[];
+	user.permission=[]
+	user.auth_assignments.forEach((assignment) => {
+        if (assignment.auth_item.type === 1) {
+            user.role.push(assignment.item_name);  // Role
+        } else if (assignment.auth_item.type === 2) {
+            user.permission.push(assignment.item_name);  // Permission
+        }
+    });
 	const output = {
 		status: true,
 		message: "",
-		data
+		data:user
 	}
 	res.status(200).json(output);
 })
@@ -311,18 +377,36 @@ exports.updateMeta = CatchAsync(async (req, res) => {
 
 exports.details = CatchAsync(async (req, res) => {
 	const { id } = req.params;
-	const User = await Users.findOne({
-		attributes: ['first_name', 'last_name', 'email', 'username', 'status'],
+	const user = JSON.parse(JSON.stringify(await Users.findOne({
+		attributes: ["id", "first_name", "last_name", "email", "username", "status"],
+		include: [
+		  {
+			model: db.auth_assignment,
+			attributes: ["item_name"], // Fetch role/permission names
+			include: [
+			  {
+				model: db.auth_item,
+				attributes: ["id", "name", "type", "description"], // Fetch permission details
+			  }
+			]
+		  }
+		]
+	})))
+	if (!user) return next(new AppError(`No data Found`, 404));
+	user.role=[];
+	user.permission=[]
+	user.auth_assignments.forEach((assignment) => {
+        if (assignment.auth_item.type === 1) {
+            user.role.push(assignment.item_name);  // Role
+        } else if (assignment.auth_item.type === 2) {
+            user.permission.push(assignment.item_name);  // Permission
+        }
+    });
 
-		where: {
-			id
-		}
-	});
-	if (!User) return next(new AppError(`No data Found`, 404));
 	const output = {
 		status: true,
 		message: "",
-		data: User
+		data: user
 	}
 	res.status(200).json(output);
 })
@@ -602,3 +686,4 @@ exports.searchWithRoleAuth = CatchAsync(async (req, res, next) => {
 	};
 	res.status(200).json(output);
 })
+
